@@ -7,5 +7,9 @@ urlpatterns = [
 	path('csrf/', views.csrf),
 	path('ping/', views.ping),
 	path('test/<int:question_id>/', views.test),
-	path('myQuery/', views.myQuery)
+	path('myQuery/', views.myQuery),
+
+	#api
+	path('api/v1/questions/', views.questionCollection),
+	path('api/v1/questions/<int:id>/', views.questionElement),
 ]
