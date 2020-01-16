@@ -11,4 +11,4 @@ class QuestionSerializer(serializers.ModelSerializer):
 class ThreadTopicSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = ThreadTopic
-		fields = ('id', 'topic_text', 'pub_date', 'last_update', 'summary_text', 'num_comments')
+		fields = ('id', 'topic_text', 'pub_date', 'last_update', 'summary_text', 'num_comments', 'creator')

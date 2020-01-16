@@ -34,6 +34,7 @@ class ThreadTopic(models.Model):
 	last_update = models.DateTimeField('last updated', default=timezone.now())
 	summary_text = models.CharField(max_length=200, default="this is a default summary")
 	num_comments = models.IntegerField(default=0)
+	creator = models.CharField(max_length=200, default="mystery man uno")
 
 	def __str__(self):
 		return self.topic_text
