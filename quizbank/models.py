@@ -47,4 +47,4 @@ class ThreadPost(models.Model):
 
 
 	def __str_(self):
-		return self.thread
+		return self.thread_text

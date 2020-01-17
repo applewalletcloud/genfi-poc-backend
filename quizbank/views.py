@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.middleware.csrf import get_token
-from .models import Question, ThreadTopic
+from .models import Question, ThreadTopic, ThreadPost
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import QuestionSerializer, ThreadTopicSerializer
+from .serializers import QuestionSerializer, ThreadTopicSerializer, ThreadPostSerializer
 
 
 # Create your views here.
@@ -54,3 +54,12 @@ def threadTopicCollection(request):
 		threadTopics = ThreadTopic.objects.all()
 		serializer = ThreadTopicSerializer(threadTopics, many=True)
 		return Response(serializer.data)
+
+@api_view(['GET'])
+def threadPostCollection(request):
+	if request.method == 'GET':
+		threadPosts = ThreadPost.objects.all()
+		serializer = ThreadPostSerializer(threadPosts, many=True)
+		return Response(serializer.data)
+
+

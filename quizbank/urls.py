@@ -12,5 +12,6 @@ urlpatterns = [
 	#api
 	path('api/v1/questions/', views.questionCollection),
 	path('api/v1/questions/<int:id>/', views.questionElement),
-	path('api/v1/threadtopics/', views.threadTopicCollection)
+	path('api/v1/threadtopics/', views.threadTopicCollection),
+	path('api/v1/threadposts/', views.threadPostCollection),
 ]
