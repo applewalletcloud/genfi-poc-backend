@@ -14,4 +14,5 @@ urlpatterns = [
 	path('api/v1/questions/<int:id>/', views.questionElement),
 	path('api/v1/threadtopics/', views.threadTopicCollection),
 	path('api/v1/threadposts/', views.threadPostCollection),
+	path('api/v1/threadposts/post/', views.postToForum)
 ]

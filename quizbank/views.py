@@ -6,7 +6,8 @@ from .models import Question, ThreadTopic, ThreadPost
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import QuestionSerializer, ThreadTopicSerializer, ThreadPostSerializer
-
+from rest_framework.parsers import JSONParser
+from django.utils import timezone
 
 # Create your views here.
 def index(request):
@@ -62,4 +63,16 @@ def threadPostCollection(request):
 		serializer = ThreadPostSerializer(threadPosts, many=True)
 		return Response(serializer.data)
 
+@api_view(['POST'])
+def postToForum(request):
+	data = JSONParser().parse(request)
+	threadTopics = ThreadTopic.objects.all()
+	newPost = ThreadPost(thread_topic=threadTopics[0], thread_text=data['text'], thread_creator="roboman", pub_date=timezone.now())
+	serializer = ThreadPostSerializer(newPost)
+
+	try:
+		newPost.save()
+	except:
+		return Response({"success": True}, status=400)
+	return Response({"success": False}, status=201)
 
