@@ -1,13 +1,22 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.middleware.csrf import get_token
-from .models import Question, ThreadTopic, ThreadPost
+from .models import Question, ThreadTopic, ThreadPost, ForumUser
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import QuestionSerializer, ThreadTopicSerializer, ThreadPostSerializer
+from .serializers import QuestionSerializer, ThreadTopicSerializer, ThreadPostSerializer, UserSerializer
 from rest_framework.parsers import JSONParser
 from django.utils import timezone
+
+
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+
+from django.contrib.auth.models import User
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 
 # Create your views here.
 def index(request):
@@ -67,7 +76,7 @@ def threadPostCollection(request):
 def postToForum(request):
 	data = JSONParser().parse(request)
 	threadTopics = ThreadTopic.objects.all()
-	newPost = ThreadPost(thread_topic=threadTopics[0], thread_text=data['text'], thread_creator="roboman", pub_date=timezone.now())
+	newPost = ThreadPost(thread_topic=threadTopics[int(data['id'])], thread_text=data['text'], thread_creator="roboman", pub_date=timezone.now())
 	serializer = ThreadPostSerializer(newPost)
 
 	try:
@@ -76,3 +85,43 @@ def postToForum(request):
 		return Response({"success": True}, status=400)
 	return Response({"success": False}, status=201)
 
+
+class HelloView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        content = {'message': 'Hello, World!'}
+        return Response(content)
+
+class ForumUser(APIView):
+	def get(self, request, email):
+		print("we are printing the formuser api stuff")
+		print(email)
+		#user = User.objects.get(email=email)
+		users = User.objects.all()
+		user = "user not found"
+		serializer = None
+		for curr in users:
+			if email == curr.email:
+				serializer = UserSerializer(curr)
+		print(user)
+		if not serializer:
+			# make the user here...
+			# then return it!
+
+			return Response({"user": user})
+		else:
+			return Response({"user": serializer.data})
+
+	def post(self, request):
+		data = JSONParser.parse(request)
+		newForumUser = ForumUser()
+		newUser = User()
+		try:
+			newForumUser.save()
+			newUser.save()
+		except: # i think this is the wrong order and except is in the failure case?
+			return Response({"success": True}, status=400)
+		return Response({"success": False}, status=201)
+
+	

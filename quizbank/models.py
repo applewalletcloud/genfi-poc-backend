@@ -2,6 +2,7 @@ import datetime
 
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import AbstractBaseUser, User
 
 # Create your models here.
 class Question(models.Model):
@@ -48,3 +49,12 @@ class ThreadPost(models.Model):
 
 	def __str_(self):
 		return self.thread_text
+
+
+class ForumUser(AbstractBaseUser):
+	email = models.EmailField(max_length=255, unique=True)
+	identifier = models.CharField(max_length=200)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	def __str__(self):
+		return self.email
+
