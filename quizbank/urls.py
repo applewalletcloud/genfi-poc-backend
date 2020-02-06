@@ -23,4 +23,6 @@ urlpatterns = [
 
     path('hello/', views.HelloView.as_view(), name='hello'),
     path('forumUser/<str:email>/', views.ForumUser.as_view()),
+
+    path('getUserSession/', views.getUserSession)
 ]

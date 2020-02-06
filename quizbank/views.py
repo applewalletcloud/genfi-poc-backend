@@ -18,6 +18,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+
+
+
 # Create your views here.
 def index(request):
 	return HttpResponse("Hello, this is the quizbank index!")
@@ -124,4 +129,16 @@ class ForumUser(APIView):
 			return Response({"success": True}, status=400)
 		return Response({"success": False}, status=201)
 
+@csrf_exempt
+def getUserSession(request):
 	
+    current_user = request.user
+    print("user info below!!!")
+    print(current_user)
+    print (current_user.id)
+    session_key = request.COOKIES.get(settings.SESSION_COOKIE_NAME, None)
+    print("session key below")
+    print (session_key)
+    print("request session below")
+    print(request.session.session_key)
+    return JsonResponse({"token": request.session.session_key})
