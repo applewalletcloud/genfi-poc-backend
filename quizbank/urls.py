@@ -24,5 +24,8 @@ urlpatterns = [
     path('hello/', views.HelloView.as_view(), name='hello'),
     path('forumUser/<str:email>/', views.ForumUser.as_view()),
 
-    path('getUserSession/', views.getUserSession)
+    path('getUserSession/', views.getUserSession),
+    path('getUserAuthentication/', views.getUserAuthentication),
+
+    path('oauth/login/', views.SocialLoginView.as_view()),
 ]

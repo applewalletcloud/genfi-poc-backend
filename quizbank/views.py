@@ -5,7 +5,7 @@ from .models import Question, ThreadTopic, ThreadPost, ForumUser
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import QuestionSerializer, ThreadTopicSerializer, ThreadPostSerializer, UserSerializer
+from .serializers import QuestionSerializer, ThreadTopicSerializer, ThreadPostSerializer, UserSerializer, SocialSerializer
 from rest_framework.parsers import JSONParser
 from django.utils import timezone
 
@@ -21,6 +21,13 @@ from django.shortcuts import render
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
+
+from rest_framework import generics, permissions, status, views
+from requests.exceptions import HTTPError
+ 
+from social_django.utils import load_strategy, load_backend
+from social_core.backends.oauth import BaseOAuth2
+from social_core.exceptions import MissingBackend, AuthTokenError, AuthForbidden
 
 
 # Create your views here.
@@ -131,7 +138,7 @@ class ForumUser(APIView):
 
 @csrf_exempt
 def getUserSession(request):
-	
+
     current_user = request.user
     print("user info below!!!")
     print(current_user)
@@ -141,4 +148,85 @@ def getUserSession(request):
     print (session_key)
     print("request session below")
     print(request.session.session_key)
+    print('is the user authenticated?')
+    print(current_user.is_authenticated)
     return JsonResponse({"token": request.session.session_key})
+
+def getUserAuthentication(request):
+	print("ARE WE CALLING GETUSERAUTHENTICATION?")
+	print(request.user)
+
+	token = request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+	print(token)
+	data = {'token': token}
+	print("the request is below")
+	print(request)
+	return JsonResponse({"token": token})
+ 
+class SocialLoginView(generics.GenericAPIView):
+    """Log in using facebook"""
+    serializer_class = SocialSerializer
+    permission_classes = [permissions.AllowAny]
+ 
+    def post(self, request):
+        """Authenticate user through the provider and access_token"""
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        provider = serializer.data.get('provider', None)
+        strategy = load_strategy(request)
+ 
+        try:
+            backend = load_backend(strategy=strategy, name=provider,
+            redirect_uri=None)
+ 
+        except MissingBackend:
+            return Response({'error': 'Please provide a valid provider'},
+            status=status.HTTP_400_BAD_REQUEST)
+        try:
+            if isinstance(backend, BaseOAuth2):
+                access_token = serializer.data.get('access_token')
+            user = backend.do_auth(access_token)
+        except HTTPError as error:
+            return Response({
+                "error": {
+                    "access_token": "Invalid token",
+                    "details": str(error)
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+        except AuthTokenError as error:
+            return Response({
+                "error": "Invalid credentials",
+                "details": str(error)
+            }, status=status.HTTP_400_BAD_REQUEST)
+ 
+        try:
+            authenticated_user = backend.do_auth(access_token, user=user)
+       
+        except HTTPError as error:
+            return Response({
+                "error":"invalid token",
+                "details": str(error)
+            }, status=status.HTTP_400_BAD_REQUEST)
+       
+        except AuthForbidden as error:
+            return Response({
+                "error":"invalid token",
+                "details": str(error)
+            }, status=status.HTTP_400_BAD_REQUEST)
+ 
+        if authenticated_user and authenticated_user.is_active:
+            #generate JWT token
+            #login(request, authenticated_user)
+            print("DO YOU SEE ME PRINTING HERE?!")
+            print(authenticated_user)
+            data={
+                "token": jwt_encode_handler(
+                    jwt_payload_handler(user)
+                )}
+            #customize the response to your needs
+            response = {
+                "email": authenticated_user.email,
+                "username": authenticated_user.username,
+                "token": data.get('token')
+            }
+            return Response(status=status.HTTP_200_OK, data=response)
