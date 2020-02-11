@@ -21,13 +21,21 @@ from django.shortcuts import render
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
-
 from rest_framework import generics, permissions, status, views
 from requests.exceptions import HTTPError
  
 from social_django.utils import load_strategy, load_backend
 from social_core.backends.oauth import BaseOAuth2
 from social_core.exceptions import MissingBackend, AuthTokenError, AuthForbidden
+
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny, BasePermission
+
+
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+from rest_auth.registration.views import SocialLoginView
 
 
 # Create your views here.
@@ -137,8 +145,8 @@ class ForumUser(APIView):
 		return Response({"success": False}, status=201)
 
 @csrf_exempt
-def getUserSession(request):
 
+def getUserSession(request):
     current_user = request.user
     print("user info below!!!")
     print(current_user)
@@ -152,16 +160,25 @@ def getUserSession(request):
     print(current_user.is_authenticated)
     return JsonResponse({"token": request.session.session_key})
 
-def getUserAuthentication(request):
-	print("ARE WE CALLING GETUSERAUTHENTICATION?")
-	print(request.user)
+class getUserAuthentication(APIView):
+	permission_classes = (IsAuthenticated,)
+	def get(self, request):
+		print(request)
+		print("ARE WE CALLING GETUSERAUTHENTICATION?")
+		print(request.user)
+		token = request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+		print(token)
+		data = {'token': token}
+		print("the request is below")
+		print(request)
+		return JsonResponse({"token": token})
 
-	token = request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
-	print(token)
-	data = {'token': token}
-	print("the request is below")
-	print(request)
-	return JsonResponse({"token": token})
+
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
+
+class FacebookLogin(SocialLoginView):
+    adapter_class = FacebookOAuth2Adapter
  
 class SocialLoginView(generics.GenericAPIView):
     """Log in using facebook"""

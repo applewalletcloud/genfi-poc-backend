@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import include, path
 from django.contrib.auth import views as auth_views
 from django.conf import settings
+from rest_framework_jwt.views import obtain_jwt_token
+
 #from django.conf.urls import include
 urlpatterns = [
     path('quizbank/', include('quizbank.urls')),
@@ -25,8 +27,8 @@ urlpatterns = [
     path('rest-auth/registration/', include('rest_auth.registration.urls')),
     path('accounts/', include('allauth.urls')),
     path('auth/', include('rest_framework_social_oauth2.urls')),
-    path('api/auth/oauth/', include('rest_framework_social_oauth2.urls')) # note this is the same as the above line!
-    
+    path('api/auth/oauth/', include('rest_framework_social_oauth2.urls')), # note this is the same as the above line!
+    path('api-token-auth/', obtain_jwt_token),
     #path('login/', auth_views.login, name="login"),
     #path('logout/', auth_views.logout, name="logout"),
     #path('oauth/', include('social_django.urls', namespace='social')),

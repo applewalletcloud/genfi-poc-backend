@@ -1,5 +1,5 @@
 from django.urls import path
-from rest_framework_simplejwt import views as jwt_views
+#from rest_framework_simplejwt import views as jwt_views
 
 from . import views
 
@@ -18,14 +18,17 @@ urlpatterns = [
 	path('api/v1/threadposts/post/', views.postToForum),
 
 
-	path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+	#path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    #path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
 
-    path('hello/', views.HelloView.as_view(), name='hello'),
-    path('forumUser/<str:email>/', views.ForumUser.as_view()),
+    #path('hello/', views.HelloView.as_view(), name='hello'),
+    #path('forumUser/<str:email>/', views.ForumUser.as_view()),
 
     path('getUserSession/', views.getUserSession),
-    path('getUserAuthentication/', views.getUserAuthentication),
+    path('getUserAuthentication/', views.getUserAuthentication.as_view()),
 
     path('oauth/login/', views.SocialLoginView.as_view()),
+
+    path('rest-auth/facebook/', views.FacebookLogin.as_view(), name='fb_login'),
+    path('rest-auth/google/', views.GoogleLogin.as_view(), name='google_login'),
 ]
