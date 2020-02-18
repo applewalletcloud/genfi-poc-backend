@@ -32,5 +32,6 @@ urlpatterns = [
     path('rest-auth/facebook/', views.FacebookLogin.as_view(), name='fb_login'),
     path('rest-auth/google/', views.GoogleLogin.as_view(), name='google_login'),
 
-    path('getForumUserProfilePic/<str:username>/', views.getForumUserProfilePic.as_view())
+    path('getForumUserProfilePic/<str:username>/', views.getForumUserProfilePic.as_view()),
+    path('postForumUserProfileData/', views.postForumUserProfileData.as_view()),
 ]

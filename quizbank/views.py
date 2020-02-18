@@ -5,7 +5,7 @@ from .models import Question, ThreadTopic, ThreadPost, ForumUser, ForumUserData
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import QuestionSerializer, ThreadTopicSerializer, ThreadPostSerializer, UserSerializer, SocialSerializer
+from .serializers import QuestionSerializer, ThreadTopicSerializer, ThreadPostSerializer, UserSerializer, SocialSerializer, ForumUserDataSerializer
 from rest_framework.parsers import JSONParser
 from django.utils import timezone
 
@@ -36,6 +36,9 @@ from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
+
+from rest_framework.parsers import MultiPartParser, FormParser
+
 
 
 # Create your views here.
@@ -193,15 +196,26 @@ class getForumUserProfilePic(APIView):
 			return HttpResponse(status=404)
 		return FileResponse(
 			open('media/' + str(userData.profile_pic), 'rb')
-			#userData.profile_pic
 		)
-		"""
-		return FileResponse({
-			"user_name": userData.user_name,
-			"profile_pic": userData.profile_pic
-		})
-		"""
+
+class postForumUserProfileData(APIView):
+	parser_classes = (MultiPartParser, FormParser)
+
+	def get(self, request, *args, **kwargs):
+		userData = ForumUserData.objects.all()
+		serializer = ForumUserDataSerializer(userData, many=True)
+		return Response(serializer.data)
+
+	def post(self, request, *args, **kwargs):
+		forumUserData = ForumUserDataSerializer(data=request.data)
+		if forumUserData.is_valid():
+			forumUserData.save()
+			return Response(forumUserData.data, status=status.HTTP_201_CREATED)
+		else:
+			print('error', forumUserData.errors)
+			return Response(forumUserData.errors, status=status.HTTP_400_BAD_REQUEST)	
  
+ # can probably delete below
 class SocialLoginView(generics.GenericAPIView):
     """Log in using facebook"""
     serializer_class = SocialSerializer

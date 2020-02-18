@@ -3,6 +3,7 @@ from .models import Question
 from .models import ThreadTopic
 from .models import ThreadPost
 from .models import ForumUser
+from .models import ForumUserData
 from django.contrib.auth.models import User
 
 
@@ -38,3 +39,9 @@ class SocialSerializer(serializers.Serializer):
 	"""
 	provider = serializers.CharField(max_length=255, required=True)
 	access_token = serializers.CharField(max_length=4096, required=True, trim_whitespace=True)
+
+class ForumUserDataSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = ForumUserData
+		fields = '__all__'
+
