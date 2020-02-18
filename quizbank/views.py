@@ -183,16 +183,16 @@ class FacebookLogin(SocialLoginView):
 class getForumUserProfilePic(APIView):
 	permission_classes = [permissions.AllowAny]
 	#permission_classes = (IsAuthenticated,)
-	def get(self, request):
+	def get(self, request, username):
 		token = request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
 		data = {'token': token}
 
 		try: 
-			userData = ForumUserData.objects.get(user_name="user3")
+			userData = ForumUserData.objects.get(user_name=username)
 		except ForumUserData.DoesNotExist:
 			return HttpResponse(status=404)
 		return FileResponse(
-			open('media/images/Pokemon_Bulbasaur_Profile_Pic.png', 'rb')
+			open('media/' + str(userData.profile_pic), 'rb')
 			#userData.profile_pic
 		)
 		"""
