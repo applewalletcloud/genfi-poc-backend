@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, FileResponse
 from django.middleware.csrf import get_token
-from .models import Question, ThreadTopic, ThreadPost, ForumUser
+from .models import Question, ThreadTopic, ThreadPost, ForumUser, ForumUserData
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -179,6 +179,28 @@ class GoogleLogin(SocialLoginView):
 
 class FacebookLogin(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
+
+class getForumUserProfilePic(APIView):
+	permission_classes = [permissions.AllowAny]
+	#permission_classes = (IsAuthenticated,)
+	def get(self, request):
+		token = request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+		data = {'token': token}
+
+		try: 
+			userData = ForumUserData.objects.get(user_name="user3")
+		except ForumUserData.DoesNotExist:
+			return HttpResponse(status=404)
+		return FileResponse(
+			open('media/images/Pokemon_Bulbasaur_Profile_Pic.png', 'rb')
+			#userData.profile_pic
+		)
+		"""
+		return FileResponse({
+			"user_name": userData.user_name,
+			"profile_pic": userData.profile_pic
+		})
+		"""
  
 class SocialLoginView(generics.GenericAPIView):
     """Log in using facebook"""

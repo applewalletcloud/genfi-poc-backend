@@ -47,9 +47,16 @@ class ThreadPost(models.Model):
 	pub_date = models.DateTimeField('date published')
 
 
-	def __str_(self):
+	def __str__(self):
 		return self.thread_text
 
+
+class ForumUserData(models.Model):
+	user_name = models.CharField(max_length=200)
+	profile_pic = models.ImageField(upload_to='images/')
+
+	def __str__(self):
+		return self.user_name
 
 class ForumUser(AbstractBaseUser):
 	email = models.EmailField(max_length=255, unique=True)
