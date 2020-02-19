@@ -218,13 +218,32 @@ class postForumUserProfileData(APIView):
 		print(request.data["profile_pic"])
 		print("above should be the data")
 		print("REQUEST DATA IS ABOVE FOR POSTING USER FORUM DATA")
-		forumUserData = ForumUserDataSerializer(data=request.data)
-		if forumUserData.is_valid():
-			forumUserData.save()
-			return Response(forumUserData.data, status=status.HTTP_201_CREATED)
-		else:
-			print('error', forumUserData.errors)
-			return Response(forumUserData.errors, status=status.HTTP_400_BAD_REQUEST)	
+
+		#try: # if username already exists, just edit the profil pic
+		print("we enter the try")
+		print("we search for username " + str(request.data["user_name"]))
+		user = ForumUserData.objects.get(user_name=request.data["user_name"])
+		print("we found a username match in the change user profile pic view")
+		user.profile_pic = request.data["profile_pic"]
+		user.save()
+		#user["profile_pic"].save()
+		# print(" we enter the try")
+		# ForumUserData.objects.update_or_create(
+		# 	user_name = request.data["user_name"],
+		# 	profile_pic = request.data["profile_pic"]
+		# )
+		# print("right about to return the ok status")
+		return Response(status=status.HTTP_200_OK)
+		# except: # create a new entry in the db
+		# 	print("are we entering the except?")
+		# 	forumUserData = ForumUserDataSerializer(data=request.data)
+		# 	if forumUserData.is_valid():
+		# 		forumUserData.save()
+		# 		return Response(forumUserData.data, status=status.HTTP_201_CREATED)
+		# 	else:
+		# 		print('error', forumUserData.errors)
+		# 		return Response(forumUserData.errors, status=status.HTTP_400_BAD_REQUEST)	
+
  
  # can probably delete below
 class SocialLoginView(generics.GenericAPIView):
