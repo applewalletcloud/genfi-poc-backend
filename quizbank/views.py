@@ -199,14 +199,25 @@ class getForumUserProfilePic(APIView):
 		)
 
 class postForumUserProfileData(APIView):
+	print("WE ENTER THE POST FORUM USER PROFILE DATA VIEW .2.2.2.22.")
 	parser_classes = (MultiPartParser, FormParser)
-
+	print("WE ENTER THE POST FORUM USER PROFILE DATA VIEW .3.3.3.3")
 	def get(self, request, *args, **kwargs):
 		userData = ForumUserData.objects.all()
 		serializer = ForumUserDataSerializer(userData, many=True)
 		return Response(serializer.data)
 
 	def post(self, request, *args, **kwargs):
+		print("1111 WE ENTER THE POST FORUM USER PROFILE DATA VIEW")
+		print(request)
+		print("below should be the data")
+		#print(request.values) #has no attribute values
+		#print(request.formData)
+		print(request.data)
+		print(request.data["user_name"])
+		print(request.data["profile_pic"])
+		print("above should be the data")
+		print("REQUEST DATA IS ABOVE FOR POSTING USER FORUM DATA")
 		forumUserData = ForumUserDataSerializer(data=request.data)
 		if forumUserData.is_valid():
 			forumUserData.save()

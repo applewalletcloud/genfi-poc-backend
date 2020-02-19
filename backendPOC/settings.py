@@ -110,6 +110,10 @@ REST_FRAMEWORK = {
         #'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
         #'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ],
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+    )
 }
 SOCIAL_AUTH_FACEBOOK_KEY = '186492402430643'
 SOCIAL_AUTH_FACEBOOK_SECRET = '010b9a83af2d58f893123bdf78c52376'
