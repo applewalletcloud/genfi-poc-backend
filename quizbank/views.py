@@ -39,7 +39,12 @@ from rest_auth.registration.views import SocialLoginView
 
 from rest_framework.parsers import MultiPartParser, FormParser
 
+import stripe
+import json
 
+from decimal import Decimal
+from django.contrib.auth import get_user_model
+from djstripe.models import Customer, Subscription
 
 # Create your views here.
 def index(request):
@@ -219,21 +224,23 @@ class postForumUserProfileData(APIView):
 		print("above should be the data")
 		print("REQUEST DATA IS ABOVE FOR POSTING USER FORUM DATA")
 
-		#try: # if username already exists, just edit the profil pic
-		print("we enter the try")
-		print("we search for username " + str(request.data["user_name"]))
-		user = ForumUserData.objects.get(user_name=request.data["user_name"])
-		print("we found a username match in the change user profile pic view")
-		user.profile_pic = request.data["profile_pic"]
-		user.save()
-		#user["profile_pic"].save()
-		# print(" we enter the try")
-		# ForumUserData.objects.update_or_create(
-		# 	user_name = request.data["user_name"],
-		# 	profile_pic = request.data["profile_pic"]
-		# )
-		# print("right about to return the ok status")
-		return Response(status=status.HTTP_200_OK)
+		try: # if username already exists, just edit the profil pic
+			print("we enter the try")
+			print("we search for username " + str(request.data["user_name"]))
+			user = ForumUserData.objects.get(user_name=request.data["user_name"])
+			print("we found a username match in the change user profile pic view")
+			user.profile_pic = request.data["profile_pic"]
+			user.save()
+			#user["profile_pic"].save()
+			# print(" we enter the try")
+			# ForumUserData.objects.update_or_create(
+			# 	user_name = request.data["user_name"],
+			# 	profile_pic = request.data["profile_pic"]
+			# )
+			# print("right about to return the ok status")
+			return Response(status=status.HTTP_200_OK)
+		except:
+			return Response(forumUserData.errors, status=status.HTTP_400_BAD_REQUEST)
 		# except: # create a new entry in the db
 		# 	print("are we entering the except?")
 		# 	forumUserData = ForumUserDataSerializer(data=request.data)
@@ -243,8 +250,115 @@ class postForumUserProfileData(APIView):
 		# 	else:
 		# 		print('error', forumUserData.errors)
 		# 		return Response(forumUserData.errors, status=status.HTTP_400_BAD_REQUEST)	
+@api_view(('GET',))
+def attachPaymentMethod(request):
+	stripe.api_key = settings.STRIPE_SECRET_KEY
+	paymentMethodData = stripe.PaymentMethod.create(
+	  type="card",
+	  card={
+	    "number": "4242424242424242",
+	    "exp_month": 2,
+	    "exp_year": 2021,
+	    "cvc": "314",
+	  },
+	)
+	user = get_user_model().objects.get(id=5)
+	customer, created = Customer.get_or_create(subscriber=user.id)
+	# stripe.PaymentMethod.attach(
+	#   paymentMethodData.id,
+	#   customer=customer.id,
+	# )
+	customer.add_payment_method(paymentMethodData)
 
- 
+	return Response(status=status.HTTP_200_OK)
+
+@api_view(('GET',))
+def testSubscription(request):
+	stripe.api_key = settings.STRIPE_SECRET_KEY
+	user = get_user_model().objects.get(id=5)
+	customer, created = Customer.get_or_create(subscriber=user.id)
+	print("ARE WE MAKING IT TO THIS LINES?!")
+	stripe_subscription = stripe.Subscription.create(
+	  customer=customer.id,
+	  items=[{"plan": "plan_GmgVUol964dCwC"}],
+	)
+	subscription = Subscription.sync_from_stripe_data(
+		stripe_subscription
+	)
+	return Response(status=status.HTTP_200_OK)
+
+from django.views.decorators.csrf import csrf_exempt
+
+
+
+class stripePost(APIView):
+	permission_classes = [permissions.AllowAny]
+	def post(self, request, *args, **kwargs):
+		stripe.api_key = settings.STRIPE_SECRET_KEY # new
+		print("before the charge of stripe")
+		# print (request.POST)
+		print(request.body) 
+		body_unicode = request.body.decode('utf-8')
+		body_data = json.loads(body_unicode)
+		tokenData =  body_data
+		print(tokenData)
+		#print (request.POST["token"])
+		print("request post above")
+		user = get_user_model().objects.get(id=2)
+
+		customer, created = Customer.get_or_create(subscriber=user)
+
+		amount = Decimal(10.00)
+		customer.charge(amount)
+		print("do we make it past the stripe . charge . create?")
+		return Response(status=status.HTTP_200_OK)
+
+# class stripePost(APIView):
+# 	permission_classes = [permissions.AllowAny]
+# 	def post(self, request, *args, **kwargs):
+# 		stripe.api_key = settings.STRIPE_SECRET_KEY # new
+# 		print("before the charge of stripe")
+# 		# print (request.POST)
+# 		print(request.body) 
+# 		body_unicode = request.body.decode('utf-8')
+# 		body_data = json.loads(body_unicode)
+# 		tokenData =  body_data
+# 		print(tokenData)
+# 		#print (request.POST["token"])
+# 		print("request post above")
+# 		charge = stripe.Charge.create(
+# 			amount=500,
+# 			currency='usd',
+# 			description='A Django charge',
+# 			source=tokenData["id"]
+# 		)
+# 		print("do we make it past the stripe . charge . create?")
+# 		return Response(status=status.HTTP_200_OK)
+
+		#TODO NEXT: TRY TO DO THIS WITH DJ STRIPE SINCE IT'S ATTACHED TO A CUSTOMER!
+		# need to find out how subscriptions work
+		# need to find out how payment types work (charge, creating charges, etc)
+		# making payment vs accepting payment?
+
+
+
+# @csrf_exempt 
+# class StripeCharge():
+# 	permission_classes = [permissions.AllowAny]
+# 	def post(self, request):
+# 		stripe.api_key = settings.STRIPE_SECRET_KEY # new
+# 		print("before the charge of stripe")
+# 		print (request.POST)
+# 		print("request post above")
+# 		charge = stripe.Charge.create(
+# 			amount=500,
+# 			currency='usd',
+# 			description='A Django charge',
+# 			source=request.POST['stripeToken']
+# 		)
+# 		print("do we make it past the stripe . charge . create?")
+# 		return Response(status=status.HTTP_200_OK)
+
  # can probably delete below
 class SocialLoginView(generics.GenericAPIView):
     """Log in using facebook"""

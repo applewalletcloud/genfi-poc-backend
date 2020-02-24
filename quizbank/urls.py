@@ -34,4 +34,9 @@ urlpatterns = [
 
     path('getForumUserProfilePic/<str:username>/', views.getForumUserProfilePic.as_view()),
     path('postForumUserProfileData/', views.postForumUserProfileData.as_view()),
+
+    path('stripe/charge/', views.stripePost.as_view()),
+    path('stripe/testSubscription/', views.testSubscription),
+    path('stripe/attachPaymentMethod/', views.attachPaymentMethod)
+
 ]

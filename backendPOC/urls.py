@@ -29,6 +29,7 @@ urlpatterns = [
     path('auth/', include('rest_framework_social_oauth2.urls')),
     path('api/auth/oauth/', include('rest_framework_social_oauth2.urls')), # note this is the same as the above line!
     path('api-token-auth/', obtain_jwt_token),
+    path("stripe/", include("djstripe.urls", namespace="djstripe")),
     #path('login/', auth_views.login, name="login"),
     #path('logout/', auth_views.logout, name="logout"),
     #path('oauth/', include('social_django.urls', namespace='social')),

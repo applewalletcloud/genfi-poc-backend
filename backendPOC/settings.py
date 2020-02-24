@@ -22,6 +22,18 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '-hb0d2v!_ok+p7r27-m&$xo#=n1_2=s-3r00dgs^ky(vg8diq0'
 
+# STRIPE KEYS
+STRIPE_SECRET_KEY = 'sk_test_6l7kJ0RLJ6wRfTQzagUJzLc600TxU1rgHm'
+STRIPE_PUBLISHABLE_KEY = 'pk_test_q8Uwo30uK896Zll6gRGeSEdA0016m1RzTP'
+
+# below is for dj stripe
+STRIPE_LIVE_PUBLIC_KEY = os.environ.get("STRIPE_LIVE_PUBLIC_KEY", "<your publishable key>")
+STRIPE_LIVE_SECRET_KEY = os.environ.get("STRIPE_LIVE_SECRET_KEY", "<your secret key>")
+STRIPE_TEST_PUBLIC_KEY = os.environ.get("STRIPE_TEST_PUBLIC_KEY", "pk_test_q8Uwo30uK896Zll6gRGeSEdA0016m1RzTP")
+STRIPE_TEST_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY", "sk_test_6l7kJ0RLJ6wRfTQzagUJzLc600TxU1rgHm")
+STRIPE_LIVE_MODE = False
+DJSTRIPE_WEBHOOK_SECRET = "whsec_C23Mgx3Xds5RmXYW8JJfX6s0qMSZcM1Q" # this gets changed eventually! WARNING!
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -52,6 +64,7 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'social_django',
     'rest_framework_social_oauth2',
+    "djstripe",
 ]
 REST_USE_JWT = True
 SITE_ID = 1
