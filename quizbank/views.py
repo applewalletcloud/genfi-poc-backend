@@ -185,6 +185,9 @@ class SocialLoginView(generics.GenericAPIView):
     serializer_class = SocialSerializer
     permission_classes = [permissions.AllowAny]
  
+    def get(self, request):
+        console.log(request.data)
+
     def post(self, request):
         """Authenticate user through the provider and access_token"""
         serializer = self.serializer_class(data=request.data)

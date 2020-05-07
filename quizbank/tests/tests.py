@@ -7,7 +7,7 @@ from django.test import Client
 # allows us to search for urls by their name
 from django.urls import reverse
 
-from .models import Question
+from quizbank.models import Question
 # Create your tests here.
 
 # instantiate client
@@ -29,6 +29,7 @@ def create_question(question_text, days):
 class QuestionIndexViewTests(TestCase):
 	# test made to practice  using a client in django tests
 	def test_index_endpoint(self):
+		print(reverse('index'))
 		response = self.client.get(reverse('index'))
 		self.assertEqual(response.status_code, 200)
 		self.assertContains(response, "Hello, this is the quizbank index!")

@@ -109,25 +109,27 @@ REST_FRAMEWORK = {
         #'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ],
 }
-SOCIAL_AUTH_FACEBOOK_KEY = '186492402430643'
-SOCIAL_AUTH_FACEBOOK_SECRET = '010b9a83af2d58f893123bdf78c52376'
+SOCIAL_AUTH_FACEBOOK_KEY = '186492402430643' # App ID here
+SOCIAL_AUTH_FACEBOOK_SECRET = '010b9a83af2d58f893123bdf78c52376' # secret key here
 SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {'fields': 'id, name, email' }
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 FACEBOOK_EXTENDED_PERMISSIONS = ['email']
 SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
-SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = TrueSOCIAL_AUTH_LOGIN_REDIRECT_URL = "https://localhost:3000/forum/"
+SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = "https://localhost:3000/forum/"
 
 SOCIAL_AUTH_PIPELINE = (
-'social_core.pipeline.social_auth.social_details',
-'social_core.pipeline.social_auth.social_uid',
-'social_core.pipeline.social_auth.auth_allowed',
-'social_core.pipeline.social_auth.social_user',
-'social_core.pipeline.user.get_username',
-'social_core.pipeline.social_auth.associate_by_email',
-'social_core.pipeline.user.create_user',
-'social_core.pipeline.social_auth.associate_user',
-'social_core.pipeline.social_auth.load_extra_data',
-'social_core.pipeline.user.user_details', )
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.social_auth.associate_by_email',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details', 
+)
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -157,13 +159,15 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
+#    'social_core.backends.google.GoogleOpenId',
+#    'social_core.backends.google.GoogleOAuth2',
 AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
     'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
 
     'rest_framework_social_oauth2.backends.DjangoOAuth2',
     # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
 
     # `allauth` specific authentication methods, such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
