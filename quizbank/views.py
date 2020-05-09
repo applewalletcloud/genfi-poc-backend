@@ -113,6 +113,7 @@ class HelloView(APIView):
         content = {'message': 'Hello, World!'}
         return Response(content)
 
+# i think this is no longer in use. can probably delete
 class ForumUser(APIView):
 	def get(self, request, email):
 		print("we are printing the formuser api stuff")
@@ -160,6 +161,7 @@ def getUserSession(request):
     print(current_user.is_authenticated)
     return JsonResponse({"token": request.session.session_key})
 
+# api endpoint where the client gives a JWT and gets the user associated with the JWT
 class getUserAuthentication(APIView):
 	permission_classes = (IsAuthenticated,)
 	def get(self, request):
@@ -170,8 +172,8 @@ class getUserAuthentication(APIView):
 		print(token)
 		data = {'token': token}
 		print("the request is below")
-		print(request)
-		return JsonResponse({"token": token})
+		print(request.user)
+		return JsonResponse({"user": str(request.user), "token": token})
 
 
 class GoogleLogin(SocialLoginView):
