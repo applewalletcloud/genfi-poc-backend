@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, FileResponse
 from django.middleware.csrf import get_token
-from .models import Question, ThreadTopic, ThreadPost, ForumUser
+from .models import Question, ThreadTopic, ThreadPost, ForumUser, ForumUserProfilePic
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -181,7 +181,31 @@ class GoogleLogin(SocialLoginView):
 
 class FacebookLogin(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
- 
+
+'''
+view for getting the user's profile picture
+if the user has never set a profile picture before, then a default picture of gon is used
+'''
+class getForumUserProfilePic(APIView):
+    #permission_classes = [permissions.AllowAny]
+    permission_classes = (IsAuthenticated,)
+    def get(self, request, username):
+
+        try: 
+            userData = ForumUserProfilePic.objects.get(user_name=username)
+        except ForumUserProfilePic.DoesNotExist:
+            # here we want to create an entry and return the entry
+            newEntry = ForumUserProfilePic(user_name=username, profile_pic = 'images/default.png')
+            newEntry.save()
+            return FileResponse(
+                open('media/images/default.png', 'rb')
+            )
+        return FileResponse(
+            open('media/' + str(userData.profile_pic), 'rb')
+        )
+
+
+
 class SocialLoginView(generics.GenericAPIView):
     """Log in using facebook"""
     serializer_class = SocialSerializer

@@ -58,3 +58,18 @@ class ForumUser(AbstractBaseUser):
 	def __str__(self):
 		return self.email
 
+class ForumUserProfilePic(models.Model):
+	user_name = models.CharField(max_length=200)
+	profile_pic = models.ImageField(upload_to='images/')
+
+	def __str__(self):
+		return self.user_name
+
+
+
+
+
+
+
+
+

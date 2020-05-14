@@ -57,7 +57,7 @@ INSTALLED_APPS = [
 REST_USE_JWT = True
 SITE_ID = 1
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3600)
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3600*24)
 }
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
