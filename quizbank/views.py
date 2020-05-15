@@ -190,19 +190,46 @@ class getForumUserProfilePic(APIView):
     #permission_classes = [permissions.AllowAny]
     permission_classes = (IsAuthenticated,)
     def get(self, request, username):
-
+        # checks to see if the user already has a profile pic
         try: 
             userData = ForumUserProfilePic.objects.get(user_name=username)
         except ForumUserProfilePic.DoesNotExist:
-            # here we want to create an entry and return the entry
+            # here we want to create an entry with our default profile pic and return it
             newEntry = ForumUserProfilePic(user_name=username, profile_pic = 'images/default.png')
             newEntry.save()
             return FileResponse(
                 open('media/images/default.png', 'rb')
             )
         return FileResponse(
-            open('media/' + str(userData.profile_pic), 'rb')
+            open(str(userData.profile_pic), 'rb')
         )
+
+'''
+endpoint for users to change their forum profile picture
+'''
+class postForumUserProfilePic(APIView):
+    permission_classes = [permissions.AllowAny]
+    #permission_classes = (IsAuthenticated,)
+    def post(self, request, *args, **kwargs):
+        print("1111 WE ENTER THE POST FORUM USER PROFILE DATA VIEW")
+        print(request)
+        print("below should be the data")
+        print(request.data)
+        print(request.data["user_name"])
+        print(request.data["profile_pic"])
+        print("above should be the data")
+        print("REQUEST DATA IS ABOVE FOR POSTING USER FORUM DATA")
+
+        try: # if username already exists, just edit the profil pic
+            print("we enter the try")
+            print("we search for username " + str(request.data["user_name"]))
+            user = ForumUserProfilePic.objects.get(user_name=request.data["user_name"])
+            print("we found a username match in the change user profile pic view")
+            user.profile_pic = request.data["profile_pic"]
+            user.save()
+            return Response(status=status.HTTP_200_OK)
+        except:
+            return Response(forumUserData.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 

@@ -60,7 +60,7 @@ class ForumUser(AbstractBaseUser):
 
 class ForumUserProfilePic(models.Model):
 	user_name = models.CharField(max_length=200)
-	profile_pic = models.ImageField(upload_to='images/')
+	profile_pic = models.ImageField(upload_to='media/images/')
 
 	def __str__(self):
 		return self.user_name

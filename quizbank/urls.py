@@ -34,4 +34,5 @@ urlpatterns = [
     path('rest-auth/google/', views.GoogleLogin.as_view(), name='google_login'),
     # path('social_auth/', include('social_django.urls', namespace='social')), # could not find out proper endpoints
     path('getForumUserProfilePic/<str:username>/', views.getForumUserProfilePic.as_view()),
+    path('postForumUserProfilePic/', views.postForumUserProfilePic.as_view()),
 ]
