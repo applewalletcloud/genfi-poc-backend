@@ -1,9 +1,8 @@
 from django.contrib import admin
 
-from .models import Question, Answer, ThreadTopic, ThreadPost, ForumUserProfilePic
+from .models import ThreadTopic, ThreadPost, ForumUserProfilePic, ForumPost
 # Register your models here.
-admin.site.register(Question)
-admin.site.register(Answer)
 admin.site.register(ThreadTopic)
 admin.site.register(ThreadPost)
 admin.site.register(ForumUserProfilePic)
+admin.site.register(ForumPost)

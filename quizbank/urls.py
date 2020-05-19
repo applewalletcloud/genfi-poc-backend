@@ -35,4 +35,10 @@ urlpatterns = [
     # path('social_auth/', include('social_django.urls', namespace='social')), # could not find out proper endpoints
     path('getForumUserProfilePic/<str:username>/', views.getForumUserProfilePic.as_view()),
     path('postForumUserProfilePic/', views.postForumUserProfilePic.as_view()),
+    
+    path('getForumMainPosts/', views.getForumMainPosts.as_view()),
+    path('getForumPostByID/<int:post_id>/', views.getForumPostByID.as_view()),
+    
+    path('getForumComments/<int:main_post_id>/', views.getForumComments.as_view()),
+    path('forumUserPost/', views.ForumUserPost.as_view()),
 ]
